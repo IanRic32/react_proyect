@@ -42,6 +42,8 @@ export default function ChatWindow() {
   const handleSend = async () => {
     if (!currentPrompt.trim()) return;
     
+    console.log("Enviando mensaje:", currentPrompt); // Debug 4
+
     // Agregar mensaje del usuario
     const userMessage = { role: 'user', content: currentPrompt };
     dispatch({ type: 'ADD_MESSAGE', payload: userMessage });
@@ -49,8 +51,9 @@ export default function ChatWindow() {
     setCurrentPrompt('');
     
     try {
+      console.log("Llamando a handleSubmit..."); // Debug 5
       await handleSubmit(currentPrompt);
-      
+      console.log("handleSubmit completado"); // Debug 6
       // Agregar al historial
       dispatch({
         type: 'ADD_TO_HISTORY',

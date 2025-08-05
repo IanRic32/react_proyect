@@ -7,17 +7,18 @@ export default function useOllamaHook() {
 
   const handleSubmit = async (prompt) => {
     setLoading(true);
-    setResponse('');
     setError(null);
+    setResponse('');
 
     try {
+      console.log("Enviando prompt:", prompt); // Debug 1
       const res = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'deepseek-r1:1.5b',
           prompt: prompt,
-          max_tokens: 500,
+          //max_tokens: 500,
           stream: true,
         }),
       });
@@ -29,6 +30,7 @@ export default function useOllamaHook() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      let fullResponse = '';
 
       while (true) {
         const { value, done } = await reader.read();
@@ -43,7 +45,8 @@ export default function useOllamaHook() {
           try {
             const parsed = JSON.parse(line);
             if (parsed.response) {
-              setResponse(prev => prev + parsed.response);
+              fullResponse += parsed.response;
+              setResponse(fullResponse);
             }
           } catch (err) {
             console.error('Error parsing JSON:', err);
@@ -51,6 +54,7 @@ export default function useOllamaHook() {
         }
       }
     } catch (err) {
+      console.error("Error en useOllamaHook:", err); // Debug 3
       setError(err.message);
     } finally {
       setLoading(false);
