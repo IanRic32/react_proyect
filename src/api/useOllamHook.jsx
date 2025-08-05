@@ -20,7 +20,7 @@ export default function useOllamaHook() {
           model: 'deepseek-r1:1.5b',
           prompt: prompt,
           max_tokens: 500,
-          stream: true,
+          stream: false,
         }),
       });
 
