@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import useOllamaHook from '../../api/useOllamHook';
 import ChatInput from './ChatInput';
 import { ChatContext } from '../../context/ChatContext';
-import {ChatMessage} from './ChatMessage';
+import ChatMessage from '../Chat/ChatMessage';
 
 export default function ChatWindow() {
   const { state, dispatch } = useContext(ChatContext);
