@@ -1,31 +1,35 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+
 
 export default function useOllamaHook() {
   const [response, setResponse] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (prompt) => {
+  const handleSubmit = useCallback(async (prompt) => {
     console.log('handleSubmit called with prompt:', prompt);
     setLoading(true);
     setResponse('');
     setError(null);
 
     try {
-      console.log("Enviando prompt:", prompt); // Debug 1
-      const res = await fetch('http://localhost:11434/api/generate', {
+      const res = await fetch('http://localhost:8080/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'deepseek-r1:1.5b',
           prompt: prompt,
           max_tokens: 500,
-          stream: false,
+          stream: true,
         }),
       });
 
-      if (!res.ok || !res.body) {
-        throw new Error('Error en la respuesta del servidor');
+      if (!res.ok) {
+        throw new Error(`Error HTTP: ${res.status}`);
+      }
+
+      if (!res.body) {
+        throw new Error('No se recibió un cuerpo de respuesta');
       }
 
       const reader = res.body.getReader();
@@ -33,21 +37,20 @@ export default function useOllamaHook() {
       let buffer = '';
       let fullResponse = '';
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
+      const processChunk = (chunk) => {
+        buffer += decoder.decode(chunk, { stream: true });
         const lines = buffer.split('\n');
-        buffer = lines.pop();
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
           if (!line.trim()) continue;
+          
           try {
             const parsed = JSON.parse(line);
+            
             if (parsed.done) {
-              console.log('🟢 FIN DE GENERACIÓN')
-              return;
+              console.log('🟢 Fin de generación');
+              return true; 
             }
             
             if (parsed.response) {
@@ -55,18 +58,38 @@ export default function useOllamaHook() {
               setResponse(fullResponse);
             }
           } catch (err) {
-            console.error('Error parsing JSON:', err);
+            console.error('Error parsing JSON:', err, 'Line:', line);
+            
           }
         }
+        return false;
+      };
+
+      let isDone = false;
+      while (!isDone) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        isDone = processChunk(value);
       }
+
+      if (buffer.trim()) {
+        try {
+          const parsed = JSON.parse(buffer);
+          if (parsed.response) {
+            setResponse(prev => prev + parsed.response);
+          }
+        } catch (err) {
+          console.error('Error parsing final buffer:', err);
+        }
+      }
+
     } catch (err) {
-      console.error("Error en useOllamaHook:", err); // Debug 3
-      setError(err.message);
+      console.error("Error en useOllamaHook:", err);
+      setError(err.message || 'Error al comunicarse con el servidor');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return { handleSubmit, response, error, loading };
 }
-
