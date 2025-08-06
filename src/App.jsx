@@ -82,7 +82,6 @@ export default function App() {
 
       {/* Formulario de envío - Contenedor centrado */}
       <div style={{
-        display: "flex",
         justifyContent: "center",
         width: "100%"
       }}>
@@ -93,10 +92,11 @@ export default function App() {
             flexDirection: "column",
             gap: "8px",
             width: "100%",
+
             maxWidth: "800px" // Puedes ajustar este valor según necesites
           }}
         >
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "8px" , alignItems: "center", maxWidth: "100%"}}>
             <input
               type="text"
               placeholder="Escribe un mensaje..."
