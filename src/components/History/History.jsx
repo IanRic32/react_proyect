@@ -1,4 +1,4 @@
-import NewChatIcon from "../Chat/Newchaticon";
+import NewChatIcon from "../Chat/Newchat";
 
 export default function History() {
   return (

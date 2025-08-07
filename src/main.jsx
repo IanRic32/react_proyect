@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import History from "./History/Historyview.jsx";
+import History from "./components/History/History.jsx";
 // import GlobalProvider from "./context/contextoGlobal.jsx";
 import "./index.css";
 
