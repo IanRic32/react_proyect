@@ -12,13 +12,10 @@ export default function useOllamaHook() {
     setError(null);
 
     try {
-      // 1. Primero verificamos si el servidor está disponible
       const pingResponse = await fetch('http://localhost:11434');
       if (!pingResponse.ok) {
         throw new Error('Ollama server not running or not reachable');
       }
-
-      // 2. Hacemos la petición principal con fetch
       const response = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: {
@@ -32,13 +29,12 @@ export default function useOllamaHook() {
         }),
       });
 
-      // 3. Verificamos si la respuesta es válida
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to generate response');
       }
 
-      // 4. Procesamos el stream de respuesta
+
       if (!response.body) {
         throw new Error('No response body received');
       }
@@ -50,14 +46,14 @@ export default function useOllamaHook() {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {break};
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Guardar línea incompleta para el próximo chunk
+        buffer = lines.pop() || ''; 
 
         for (const line of lines) {
-          if (!line.trim()) continue;
+          if (!line.trim()) {continue};
 
           try {
             const parsed = JSON.parse(line);
