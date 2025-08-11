@@ -14,8 +14,8 @@ export default function NewChatIcon() {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="chat-icon"
-      >
+        className="chat-icon">
+          
         <path d="M8 32C8 17.64 20.64 6 36 6s28 11.64 28 26-12.64 26-28 26H16L8 62z" />
       </svg>
       <div className="chat-dots">

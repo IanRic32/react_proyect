@@ -1,15 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import History from "./components/History/History.jsx";
-// import GlobalProvider from "./context/contextoGlobal.jsx";
+import History from "./History/History.jsx";
+import { GlobalProvider } from './context/globalContext';
 import "./index.css";
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <div className="grid grid-cols-[auto_1fr] h-screen">
-      <History />
-      <App />
+      <GlobalProvider>
+        <History />
+        <App />
+      </GlobalProvider>
     </div>
-  /</StrictMode>,
+  </StrictMode>
 );
