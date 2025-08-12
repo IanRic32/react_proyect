@@ -16,7 +16,7 @@ const ActionTypes = {
 function globalReducer(state, action) {
   switch (action.type) {
     case ActionTypes.SAVE_HISTORY: {
-      if (!state.currentChat?.length) return state;
+      if (!state.currentChat?.length) {return state};
       
       try {
         const history = JSON.parse(localStorage.getItem("history") || "[]");
@@ -43,7 +43,7 @@ function globalReducer(state, action) {
     case ActionTypes.LOAD_MESSAGES: {
       try {
         const history = localStorage.getItem("history");
-        if (!history) return { ...state, messages: [] };
+        if (!history){ return { ...state, messages: [] }};
         
         return {
           ...state,
